@@ -434,7 +434,8 @@ write.table(d2, file = fn.d2)
 [70] "wait.slide.sd"          "wait.tap.mean"          "wait.tap.sd"           
 [73] "user"
 
-
+#yh2
+#aaaaaabbbbbbcccccc
 
 # Parse information==================
 for(game in gcode$gc){
