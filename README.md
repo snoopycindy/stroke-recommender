@@ -1,17 +1,13 @@
 stroke-recommender
 ==================
+This is a recommender system for stroke patients
+------------------------------------------------
 
-## hello
-- a
-- b
-- c
+# 1 parse the game log of normals to get the game parameters
 
-_abcdsdf_
+#2 use the game parameters and game evaluation to create a recommender system
 
-```
-source('a.R')
-```
+#3 validate the results
 
-### hello world
+#4 for clinucle use
 
-### test in version
