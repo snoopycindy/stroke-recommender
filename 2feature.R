@@ -1,9 +1,10 @@
-setwd("E:/Dropbox/touchparse_stroke")
-source("C:/R.source/my.fig.R")
-source("C:/R.source/common.R")
-source("C:/R.source/legend_col.R")
-source("C:/R.source/rey.f.R")
-source("C:/R.source/yx.common.R")
+setwd("E:/Dropbox/workspace/p_recommend_stroke/src")
+source("../R.src/common.R")
+source("../R.src/my.fig.R")
+source("../R.src/my.legend.R")
+source("../R.src/legend_col.R")
+source("../R.src/rey.f.R")
+source("../R.src/yx.common.R")
 # utils:::menuInstallPkgs()
 # install.packages("")
 require(Hmisc)
@@ -14,47 +15,60 @@ library(plotrix)
 name.d = c("time", "type", "event", "value")
 name.d2 = c("t", "sl", "id", "lv", "x", "y", "prs")
 
-#game table
-datadir <-("d2")
-#game name and code data 
-gn <- ("../gesture log/gl/gn.txt")
+
+#origin data
+odir <- "../origin data/"
+
+#處理後的log檔
+cdir <- "../complete data/"
+
+#遊戲跟其code的列表
+gn <- "../gn.txt"
+
+
 
 #設定參數
 ntect = -9 #設定none detect為-9
 time_limit = 60 #game log檔至少要60S以上
-gcode = read.table("gn_new.txt", header=T, sep="\t", as.is=T, encoding="UTF-8") #讀取game列表
+gcode = read.table(gn, header=T, sep="\t", as.is=T, encoding="UTF-8") #讀取game列表
 p.list=c('1201sub01','1202sub01','1202sub02', '1203sub01', '1205sub01','1205sub02') #設定player列表
 
 #table:game name vs game code 
-gcode = read.table("gn_new.txt", header=T, sep="\t", as.is=T, encoding="UTF-8") #讀取game列表
-allsub = list.files(path=datadir, full=T)
-name.all=list.files(path=datadir)
+gcode = read.table(gn, header=T, sep="\t", as.is=T, encoding="UTF-8") #讀取game列表
+cdir_path = paste(cdir, "d2", sep="")
+allsub = list.files(path=cdir_path, full=T)
+name.allsub=list.files(path=cdir_path)
 
-slen <-list(xmax=0,xmin=9999,ymax=0,ymin=9999) #calculate the max and min of (x,y) in the touch pad
-for(game in gcode$gc){
-  for(subno in 1:NROW(allsub)) {
-    i_sub=allsub[subno]
-    # 1. list all subject files =================
-    fn.full = list.files(i_sub, full=T)         #list all the path
-    fn.part = list.files(i_sub)                 #list file names only
-    # 2. find the game log =================  
-    n = grep(game, fn.part)   #return the location in fn.part
-    if(length(n)==0) 
-      next
-    
-    # 3. read file =================
-    gt = read.table(fn.full[n], header=T)
-    if(max(gt$x)>slen$xmax)
-      slen$xmax <- max(gt$x)
-    if(max(gt$y)>slen$ymax)
-      slen$ymax <- max(gt$y)
-    if(min(gt$x)<slen$xmin)
-      slen$xmin <- min(gt$x)
-    if(min(gt$y)<slen$ymin)
-      slen$ymin <- min(gt$y)
-  }
-}  
-rm(datadir,fn.full,fn.part,game,subno,i_sub,n)
+
+#calculate the max and min of (x,y) in the touch pad
+if(0){
+  slen <-list(xmax=0,xmin=9999,ymax=0,ymin=9999)
+  for(game in gcode$gc){
+    for(subno in 1:NROW(allsub)) {
+      i_sub=allsub[subno]
+      # 1. list all subject files =================
+      fn.full = list.files(i_sub, full=T)         #list all the path
+      fn.part = list.files(i_sub)                 #list file names only
+      # 2. find the game log =================  
+      n = grep(game, fn.part)   #return the location in fn.part
+      if(length(n)==0) 
+        next
+      
+      # 3. read file =================
+      gt = read.table(fn.full[n], header=T)
+      if(max(gt$x)>slen$xmax)
+        slen$xmax <- max(gt$x)
+      if(max(gt$y)>slen$ymax)
+        slen$ymax <- max(gt$y)
+      if(min(gt$x)<slen$xmin)
+        slen$xmin <- min(gt$x)
+      if(min(gt$y)<slen$ymin)
+        slen$ymin <- min(gt$y)
+    }
+  }  
+  rm(datadir,fn.full,fn.part,game,subno,i_sub,n)
+}
+
 
 
 #說明:
@@ -373,6 +387,7 @@ seg.all=read.table(file = "seg.all", header=T)
 gt.all=read.table(file = "gt.all")
 #yh2-end-------------------------------
 
+
 gcode.list = unique(seg.all$code)
 sub = unique(seg.all$user)
 sink("game_feature.txt")
@@ -407,42 +422,14 @@ names(d) = name.d2
 fn.d = paste("d2/",p,"/",p,"_",gl$code[i.g],".txt",sep="")
 write.table(d2, file = fn.d2)
 
-> names(seg.all)
-[1] "rate.action"            "rate.slides"            "rate.taps"             
-[4] "ratio.action.active10"  "ratio.action.active100" "ratio.dir.hor.slide"   
-[7] "ratio.dir.other.slide"  "ratio.dir.ver.slide"    "dir.sin.slide.max"     
-[10] "dir.sin.slide.mean"     "dir.sin.slide.sd"       "dir.cos.slide.max"     
-[13] "dir.cos.slide.mean"     "dir.cos.slide.sd"       "ratio.butt.slides"     
-[16] "ratio.butt.taps"        "burst.action.10"        "burst.action.5"        
-[19] "dur.action.max"         "dur.action.mean"        "dur.action.med"        
-[22] "dur.action.p75"         "dur.action.p95"         "x.action.end.mean"     
-[25] "x.action.end.sd"        "x.action.movement.mean" "x.action.movement.sd"  
-[28] "x.action.start.mean"    "x.action.start.sd"      "y.action.end.mean"     
-[31] "y.action.end.sd"        "y.action.movement.mean" "y.action.movement.sd"  
-[34] "y.action.start.mean"    "y.action.start.sd"      "dur.tap.max"           
-[37] "dur.tap.mean"           "dur.tap.med"            "dur.tap.p75"           
-[40] "dur.tap.p95"            "x.tap.mean"             "x.tap.sd"              
-[43] "y.tap.mean"             "y.tap.sd"               "dur.slide.max"         
-[46] "dur.slide.mean"         "dur.slide.med"          "dur.slide.p75"         
-[49] "dur.slide.p95"          "dist.slide.max"         "dist.slide.mean"       
-[52] "dist.slide.med"         "dist.slide.p75"         "dist.slide.p95"        
-[55] "disp.slide.max"         "disp.slide.mean"        "disp.slide.med"        
-[58] "disp.slide.p75"         "disp.slide.p95"         "speed.slide.max"       
-[61] "speed.slide.mean"       "speed.slide.med"        "speed.slide.p75"       
-[64] "speed.slide.p95"        "multi.dur.mean"         "multi.ratio.action"    
-[67] "wait.action.mean"       "wait.action.sd"         "wait.slide.mean"       
-[70] "wait.slide.sd"          "wait.tap.mean"          "wait.tap.sd"           
-[73] "user"
-
-
-# Parse information==================
+# Parse information-yx ==================
 for(game in gcode$gc){
-  fn.d3 = paste("d3/",  game, sep="")
+  fn.d3 = paste(cdir, "d3/",  game, ".txt", sep="")
   sink(fn.d3)
-  for(sub in allsub) {
+  for(sub in 1:len(allsub)) {
     # list all subject files =================
-    fn.full = list.files(sub, full=T)         #list all the path
-    fn.part = list.files(sub)                 #list file names only
+    fn.full = list.files(allsub[sub], full=T)         #list all the path
+    fn.part = list.files(allsub[sub])                 #list file names only
     
     # find the game log =================  
     n = grep(game, fn.part)   #回傳fn.part的位置，如果吻合
@@ -501,22 +488,24 @@ for(game in gcode$gc){
       mean.prs = mean(d2$prs[isd])
       sd.prs = sd(d2$prs[isd], na.rm = T)
       # game feature belong to one subject
-      d3 = c(game, sub, type, sum.l, st, et, sum.t, mean.prs, sd.prs, mean.v, sd.v)
+      d3 = c(game, name.allsub[sub], type, sum.l, st, et, sum.t, mean.prs, sd.prs, mean.v, sd.v)
       cat(d3, "\n")
     }
   }
   sink()
 }
 
-sink("d5")
+fn.d5 = paste(cdir, "d5.txt", sep="")
+sink(fn.d5)
 for(game in gcode$gc){
   
-  fn.d3 = paste("d3/",  game, sep="")
+  fn.d3 = paste(cdir, "d3/",  game, ".txt", sep="")
   d3 = read.table(file = fn.d3)
   names(d3) = c("gn", "sub", "type", "sum.l", "st", "et", "sum.t", 
                 "mean.prs", "sd.prs", "mean.v", "sd.v")
   sub.list = unique(d3$sub)
-  fn.d4 = paste("d4/",  game, sep="")
+  
+  fn.d4 = paste(cdir, "d4/",  game, ".txt", sep="")
 #   sink(fn.d4)
   for(s in sub.list){
     isd = which(d3$sub == s)
@@ -546,20 +535,21 @@ for(game in gcode$gc){
 }
 sink()
 
-d5 = read.table("d5")
+d5 = read.table(fn.d5)
 names(d5) = c("gn", "sub", "t.all", "num.act", "frq.act", 
               "num.tap", "frq.tap", "ratio.tap", "dur.tap",
               "num.sld", "frq.sld", "ratio.sld", "dis.sld")
 game.list = unique(d5$gn)
 plot(d5$t, d5$prs, type="n", 
-     xlim = range(d5$frq.tap), 
-     ylim = range(d5$frq.sld),
+     xlim = range(d5$num.tap), 
+     ylim = range(d5$num.sld),
      xlab = "num.tap",
      ylab = "num.sld")
 
 for(g in 1:50){
   isd = which(d5$gn==unique(d5$gn)[g])
-  points(d5$frq.tap[isd], d5$frq.sld[isd], col=g)
+  if(g<26) col=1 else col=2
+  points(d5$num.tap[isd], d5$num.sld[isd], col=col)
 }
 
 f.list = c(4:13)
@@ -570,9 +560,3 @@ plot(d5, col = cl$cluster)
 points(cl$centers, col = 1:5, pch = 8, cex = 2)
 ss <- function(d5) sum(scale(d5, scale = FALSE)^2)
 
-for(game in gcode$gc){
-  d4 = read.table(file = fn.d4)
-  names(d4) = c("gn", "sub", "t.all", "num.act", "frq.act", 
-                "num.tap", "frq.tap", "ratio.tap", "dur.tap",
-                "num.sld", "frq.sld", "ratio.sld", "dis.sld")
-}
