@@ -55,7 +55,7 @@ sink()
 d2 = read.table("data2.txt")
 names(d2) = name.d2
 
-# change the data type===============
+# change the data type (factor => numeric)===============
 d2$t = as.numeric(as.character(d2$t))
 d2$x = as.numeric(as.character(d2$x))
 d2$y = as.numeric(as.character(d2$y))
